@@ -64,7 +64,7 @@
       40%, 60% { transform: translate3d(6px, 0, 0); }
     }
 
-    /* 主畫面：關卡選單 */
+    /* 主選單關卡列表 */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -178,7 +178,45 @@
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     }
 
-    /* 顏色選擇列 (機制一) */
+    /* 機制一：3步驟6格積木圖示 */
+    .steps-grid {
+      display: flex;
+      justify-content: space-around;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .step-box {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .grid-2x3 {
+      display: grid;
+      grid-template-columns: repeat(3, 36px);
+      grid-template-rows: repeat(2, 28px);
+      gap: 4px;
+      margin-top: 8px;
+      justify-content: center;
+    }
+
+    .grid-cell {
+      border: 1px solid #64748b;
+      border-radius: 3px;
+      background: #334155;
+    }
+
+    .grid-cell.highlight {
+      background: #f59e0b;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    /* 顏色選擇按鈕 */
     .color-picker-grid {
       display: flex;
       justify-content: center;
@@ -217,7 +255,7 @@
       cursor: pointer;
     }
 
-    /* 機制三：圖案鍵 */
+    /* 機制三：圖案按鈕 */
     .shape-grid {
       display: flex;
       justify-content: center;
@@ -253,7 +291,7 @@
       box-shadow: 0 0 30px #f59e0b;
     }
 
-    /* 輸入區 */
+    /* 通用輸入區 */
     .input-group {
       display: flex;
       justify-content: center;
@@ -453,7 +491,7 @@
       // 成功慶祝聲 (Victory Chime)
       playVictory() {
         this.init();
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, i) => {
           const osc = this.ctx.createOscillator();
           const noteGain = this.ctx.createGain();
@@ -545,7 +583,6 @@
     let userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
     let m2KeyboardUnlocked = false;
 
-    // 初始化關卡列表
     function initMenu() {
       const grid = document.getElementById('menu-grid');
       grid.innerHTML = '';
@@ -561,7 +598,6 @@
       });
     }
 
-    // 開始關卡
     function startLevel(levelId) {
       currentLevel = LEVELS.find(l => l.id === levelId);
       document.getElementById('screen-menu').classList.add('hidden');
@@ -587,19 +623,31 @@
     function generateRandomPuzzle() {
       generatedData = {};
       
-      // 機制一隨機邏輯
+      // 機制一：3個算式 (生成6個1~6數字) + 3個獨立步驟標示圖
       const lightKeys = ['red', 'blue', 'green'];
       const chosenLight = lightKeys[Math.floor(Math.random() * lightKeys.length)];
-      const num1 = Math.floor(Math.random() * 6) + 1; // 1-6
-      const num2 = Math.floor(Math.random() * 6) + 1; // 1-6
       
-      const correctColor1 = COLOR_TABLES[chosenLight][num1];
-      const correctColor2 = COLOR_TABLES[chosenLight][num2];
+      const gridNums = [];
+      for(let i=0; i<6; i++) {
+        gridNums.push(Math.floor(Math.random() * 6) + 1);
+      }
+      
+      // 算出 6 個位置的顏色 (0~2為下層左中右, 3~5為上層左中右)
+      const gridColors = gridNums.map(n => COLOR_TABLES[chosenLight][n]);
+
+      // 隨機抽 3 個不同位置並打亂作為步驟 ① ② ③
+      const stepTargets = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).slice(0, 3);
+      const targetColors = stepTargets.map(pos => gridColors[pos]);
 
       generatedData.m1 = {
         light: chosenLight,
-        expr: `${num1 * 10 + 5} + ${num2 * 10 + 2}`, // 生成算式
-        targetColors: [correctColor1, correctColor2] // 底層 -> 上層 正確顏色
+        exprs: [
+          `${gridNums[0]*10 + gridNums[1]}`,
+          `${gridNums[2]*10 + gridNums[3]}`,
+          `${gridNums[4]*10 + gridNums[5]}`
+        ],
+        stepTargets: stepTargets, // 3個被高亮的位置
+        targetColors: targetColors
       };
 
       // 機制二隨機鍵盤順序
@@ -630,7 +678,6 @@
       generatedData.m4 = { word: word };
     }
 
-    // 渲染卡片入口
     function renderModuleCards() {
       const container = document.getElementById('modules-container');
       container.innerHTML = '';
@@ -654,18 +701,41 @@
       });
     }
 
-    // 開啟機制內容
     function openModulePanel(modKey) {
       const panel = document.getElementById('active-panel');
       panel.classList.add('active');
       
       if (modKey === 'm1') {
         const lightColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981' };
+        
+        // 生成 3 個步驟 6 格圖示 HTML
+        const stepsHTML = generatedData.m1.stepTargets.map((targetIdx, stepNum) => {
+          let cellsHTML = '';
+          // 0,1,2 為下層; 3,4,5 為上層 (UI顯示上層在第一排: 3,4,5; 下層在第二排: 0,1,2)
+          const displayOrder = [3, 4, 5, 0, 1, 2];
+          displayOrder.forEach(cellIdx => {
+            const isHighlight = (cellIdx === targetIdx) ? 'highlight' : '';
+            cellsHTML += `<div class="grid-cell ${isHighlight}"></div>`;
+          });
+
+          return `
+            <div class="step-box">
+              <div style="font-size: 0.8rem; color: #94a3b8;">步驟 ${stepNum + 1}</div>
+              <div class="grid-2x3">${cellsHTML}</div>
+            </div>
+          `;
+        }).join('');
+
         panel.innerHTML = `
           <h3>區域 A：積木色彩驗證</h3>
           <div class="light-box" style="background: ${lightColorMap[generatedData.m1.light]}"></div>
-          <div style="font-size: 1.8rem; text-align: center; color: #facc15; margin: 12px 0;">${generatedData.m1.expr}</div>
-          <div style="text-align: center; margin-bottom: 8px;" id="m1-input-display">請點選顏色 (底層 ➔ 上層)：無</div>
+          <div style="font-size: 1.4rem; text-align: center; color: #facc15; margin: 12px 0;">
+            ${generatedData.m1.exprs.join(' + ')}
+          </div>
+          
+          <div class="steps-grid">${stepsHTML}</div>
+
+          <div style="text-align: center; margin-bottom: 8px;" id="m1-input-display">請依序點選 3 個步驟對應顏色：無</div>
           <div class="color-picker-grid">
             ${['紅', '綠', '黃', '藍', '橙', '淺藍'].map(c => 
               `<button class="btn-color" style="background: ${COLOR_HEX[c]}" onclick="pressM1Color('${c}')"></button>`
@@ -681,7 +751,7 @@
           <h3>區域 B：方向鎖機制</h3>
           <div class="light-box" style="background: ${lightMap[generatedData.m2.color]}"></div>
           <div style="text-align: center; margin-bottom: 12px;">
-            <button class="btn-submit" style="background: var(--warning-color); color: #000;" onclick="unlockM2Keyboard()">實體擺放完成</button>
+            <button class="btn-submit" style="background: var(--warning-color); color: #000;" onclick="unlockM2Keyboard()">擺放完成</button>
           </div>
           <div id="m2-keyboard-area" class="hidden">
             <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="arrow-display">請輸入方向：無</div>
@@ -729,7 +799,7 @@
 
     // --- 機制一互動 ---
     function pressM1Color(color) {
-      if (userInputs.m1_colors.length < 2) {
+      if (userInputs.m1_colors.length < 3) {
         userInputs.m1_colors.push(color);
         document.getElementById('m1-input-display').innerText = "已選擇: " + userInputs.m1_colors.join(' ➔ ');
       }
@@ -738,13 +808,21 @@
     function submitM1() {
       const target = generatedData.m1.targetColors;
       const input = userInputs.m1_colors;
-      if (input.length === 2 && input[0] === target[0] && input[1] === target[1]) {
+      
+      let isCorrect = (input.length === 3);
+      if (isCorrect) {
+        for (let i = 0; i < 3; i++) {
+          if (input[i] !== target[i]) isCorrect = false;
+        }
+      }
+
+      if (isCorrect) {
         soundEngine.playVictory();
         showStatus("積木顏色密碼驗證成功！", true);
       } else {
         triggerPenalty("積木密碼錯誤！倒數時間扣減 20 秒！");
         userInputs.m1_colors = [];
-        document.getElementById('m1-input-display').innerText = "請點選顏色 (底層 ➔ 上層)：無";
+        document.getElementById('m1-input-display').innerText = "請依序點選 3 個步驟對應顏色：無";
       }
     }
 
@@ -771,7 +849,6 @@
       }
     }
 
-    // 支援鍵盤按鍵 1, 2, 3, 4
     window.addEventListener('keydown', (e) => {
       if (!m2KeyboardUnlocked) return;
       if (['1', '2', '3', '4'].includes(e.key)) {
@@ -790,7 +867,6 @@
     }
 
     function submitM3() {
-      const input = userInputs.m3_shapes.join('');
       if (userInputs.m3_shapes.length === 4) {
         soundEngine.playVictory();
         showStatus("圖案順序驗證成功！", true);
@@ -813,7 +889,7 @@
         const isMuted = (i >= 2);
 
         for (let symbol of code) {
-          const duration = (symbol === '.') ? 500 : 1500; // 短閃0.5s, 長閃1.5s
+          const duration = (symbol === '.') ? 500 : 1500;
           timeline.push({ duration, isMuted });
           timeline.push({ duration: 400, pause: true });
         }
@@ -852,7 +928,7 @@
       }
     }
 
-    // 錯誤懲罰機制 (扣減 20 秒 + 爆炸聲)
+    // 錯誤懲罰 (扣減 20 秒 + 爆炸聲)
     function triggerPenalty(msg) {
       soundEngine.playExplosion();
       remainingTime = Math.max(0, remainingTime - 20);
@@ -871,7 +947,6 @@
       el.className = `status-msg ${isSuccess ? 'success' : 'error'}`;
     }
 
-    // 計時器
     function startTimer(seconds) {
       clearInterval(timerInterval);
       remainingTime = seconds;
@@ -882,7 +957,7 @@
         updateTimerDisplay();
         if (remainingTime <= 0) {
           clearInterval(timerInterval);
-          soundEngine.playFinalExplosion(); // 終極爆破音效
+          soundEngine.playFinalExplosion();
           showStatus("⏰ 時間到！任務爆炸失敗！", false);
         }
       }, 1000);
