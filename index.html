@@ -20,7 +20,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
     body {
@@ -53,7 +53,6 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
-    /* 震動與爆炸效果 */
     .shake {
       animation: shakeAndFlash 0.35s cubic-bezier(.36,.07,.19,.97) both;
     }
@@ -65,7 +64,7 @@
       40%, 60% { transform: translate3d(6px, 0, 0); }
     }
 
-    /* 主選單關卡網格 */
+    /* 主畫面：關卡選單 */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -77,10 +76,10 @@
       background: #334155;
       border: 2px solid transparent;
       border-radius: 8px;
-      padding: 16px;
+      padding: 20px;
       cursor: pointer;
       transition: all 0.2s ease;
-      text-align: left;
+      text-align: center;
     }
 
     .level-card:hover {
@@ -90,17 +89,17 @@
 
     .level-title {
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: #38bdf8;
       margin-bottom: 6px;
     }
 
-    .level-desc {
-      font-size: 0.85rem;
-      color: #94a3b8;
+    .level-time {
+      font-size: 0.9rem;
+      color: var(--warning-color);
     }
 
-    /* 遊戲進行中頂部標題列 */
+    /* 遊戲進行頂部欄 */
     .game-header {
       display: flex;
       justify-content: space-between;
@@ -111,7 +110,7 @@
     }
 
     .timer {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: bold;
       color: var(--warning-color);
       background: #0f172a;
@@ -128,14 +127,12 @@
       cursor: pointer;
     }
 
-    .btn-back:hover {
-      background: #64748b;
-    }
+    .btn-back:hover { background: #64748b; }
 
-    /* 混合關卡入口卡片 */
+    /* 混合機制卡片區 */
     .modules-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -170,48 +167,55 @@
       display: none;
     }
 
-    .view-panel.active {
-      display: block;
-    }
+    .view-panel.active { display: block; }
 
-    /* 機制一：算式 */
-    .math-expr {
-      font-size: 2rem;
-      letter-spacing: 2px;
-      text-align: center;
-      color: #facc15;
-      margin: 16px 0;
-    }
-
-    /* 機制二：4色燈號與方向鍵 */
+    /* 燈號指示框 */
     .light-box {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
-      margin: 16px auto;
+      margin: 12px auto;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     }
 
-    .arrow-grid {
+    /* 顏色選擇列 (機制一) */
+    .color-picker-grid {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .btn-color {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      border: 2px solid #ffffff33;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .btn-color:hover { transform: scale(1.1); }
+
+    /* 機制二：亂序鍵盤 */
+    .keyboard-grid {
       display: grid;
-      grid-template-columns: repeat(3, 60px);
-      gap: 8px;
+      grid-template-columns: repeat(2, 100px);
+      gap: 12px;
       justify-content: center;
       margin-top: 16px;
     }
 
-    .btn-arrow {
-      width: 60px;
+    .btn-key {
       height: 60px;
-      font-size: 1.5rem;
-      background: #334155;
+      font-size: 1.2rem;
+      font-weight: bold;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
-
-    .btn-arrow:hover { background: #475569; }
 
     /* 機制三：圖案鍵 */
     .shape-grid {
@@ -222,9 +226,9 @@
     }
 
     .btn-shape {
-      width: 70px;
-      height: 70px;
-      font-size: 2rem;
+      width: 65px;
+      height: 65px;
+      font-size: 1.8rem;
       background: #334155;
       border: none;
       border-radius: 8px;
@@ -236,11 +240,11 @@
 
     /* 機制四：摩斯燈 */
     .morse-light {
-      width: 90px;
-      height: 90px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: #334155;
-      margin: 20px auto;
+      margin: 16px auto;
       transition: background-color 0.1s;
     }
 
@@ -249,7 +253,7 @@
       box-shadow: 0 0 30px #f59e0b;
     }
 
-    /* 輸入區塊 */
+    /* 輸入區 */
     .input-group {
       display: flex;
       justify-content: center;
@@ -280,11 +284,11 @@
 
     .btn-submit:hover { background: var(--accent-hover); }
 
-    /* 控制面板音量與狀態 */
+    /* 音量列 */
     .audio-bar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 12px;
       margin-top: 20px;
       padding-top: 15px;
       border-top: 1px solid #334155;
@@ -305,13 +309,13 @@
 
   <div class="container" id="mainContainer">
     
-    <!-- 主畫面：關卡選擇 -->
+    <!-- 主選單：選擇關卡 -->
     <div id="screen-menu">
-      <h2 style="margin-bottom: 16px;">請選擇挑戰關卡：</h2>
+      <h2 style="margin-bottom: 16px;">請選擇關卡：</h2>
       <div class="menu-grid" id="menu-grid"></div>
     </div>
 
-    <!-- 遊戲進行面板 -->
+    <!-- 遊戲進行區域 -->
     <div id="screen-game" class="hidden">
       <div class="game-header">
         <button class="btn-back" onclick="goToMenu()">← 返回關卡選單</button>
@@ -319,26 +323,27 @@
         <div class="timer" id="timer-display">04:00</div>
       </div>
 
-      <!-- 關卡入口卡片區 -->
+      <!-- 入口卡片區 -->
       <div class="modules-container" id="modules-container"></div>
 
-      <!-- 機制詳細內容展開面板 -->
+      <!-- 詳細內容展開面板 -->
       <div id="active-panel" class="view-panel"></div>
 
-      <!-- 狀態提示與爆炸調試按鈕 -->
+      <!-- 訊息提示區 -->
       <div id="status-msg" class="status-msg"></div>
 
-      <!-- 音樂音量列 -->
+      <!-- 音量控制列 -->
       <div class="audio-bar">
         <button class="btn-back" style="padding: 4px 10px; font-size: 0.8rem;" onclick="soundEngine.toggleMute()" id="mute-btn">靜音</button>
-        <button class="btn-back" style="padding: 4px 10px; font-size: 0.8rem; background: var(--danger-color);" onclick="triggerExplosion()">💥 測試爆炸音效</button>
+        <span style="font-size: 0.85rem; color: #94a3b8;">BGM 音量:</span>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5" oninput="soundEngine.setVolume(this.value)" style="flex-grow: 1; accent-color: var(--accent-color);">
       </div>
     </div>
 
   </div>
 
   <script>
-    // --- 音效引擎 (Web Audio API) ---
+    // --- Web Audio 音效引擎 ---
     class SoundEngine {
       constructor() {
         this.ctx = null;
@@ -360,11 +365,11 @@
           this.masterGain.connect(this.ctx.destination);
 
           this.bgmGain = this.ctx.createGain();
-          this.bgmGain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          this.bgmGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
           this.bgmGain.connect(this.masterGain);
 
           this.sfxGain = this.ctx.createGain();
-          this.sfxGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+          this.sfxGain.gain.setValueAtTime(1.0, this.ctx.currentTime);
           this.sfxGain.connect(this.masterGain);
         }
         if (this.ctx.state === 'suspended') {
@@ -372,13 +377,12 @@
         }
       }
 
-      // 關卡背景音樂 (BGM)
       startBGM() {
         this.init();
         if (this.isPlayingBGM) return;
         this.isPlayingBGM = true;
 
-        const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; // C4, E4, G4, C5
+        const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
         let index = 0;
 
         this.bgmInterval = setInterval(() => {
@@ -406,10 +410,19 @@
         if (this.bgmInterval) clearInterval(this.bgmInterval);
       }
 
-      // 爆炸音效
+      // 普通爆炸聲 (錯誤懲罰)
       playExplosion() {
         this.init();
-        const duration = 0.5;
+        this.generateNoise(0.5, 800, 0.8);
+      }
+
+      // 時間到終極大爆破 (高音量)
+      playFinalExplosion() {
+        this.init();
+        this.generateNoise(1.2, 1200, 2.5);
+      }
+
+      generateNoise(duration, filterFreq, volumeMultiplier) {
         const bufferSize = this.ctx.sampleRate * duration;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
@@ -423,11 +436,11 @@
 
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(800, this.ctx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + duration);
+        filter.frequency.setValueAtTime(filterFreq, this.ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + duration);
 
         const expGain = this.ctx.createGain();
-        expGain.gain.setValueAtTime(0.9, this.ctx.currentTime);
+        expGain.gain.setValueAtTime(volumeMultiplier, this.ctx.currentTime);
         expGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
 
         noise.connect(filter);
@@ -437,7 +450,28 @@
         noise.start();
       }
 
-      // 摩斯與閃燈嗶嗶聲
+      // 成功慶祝聲 (Victory Chime)
+      playVictory() {
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const noteGain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+
+          noteGain.gain.setValueAtTime(0.3, this.ctx.currentTime + i * 0.1);
+          noteGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.1 + 0.3);
+
+          osc.connect(noteGain);
+          noteGain.connect(this.sfxGain);
+
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.3);
+        });
+      }
+
       playBeep(duration) {
         this.init();
         const osc = this.ctx.createOscillator();
@@ -456,6 +490,11 @@
         osc.stop(this.ctx.currentTime + (duration / 1000));
       }
 
+      setVolume(val) {
+        this.init();
+        this.masterGain.gain.setValueAtTime(val, this.ctx.currentTime);
+      }
+
       toggleMute() {
         this.init();
         this.isMuted = !this.isMuted;
@@ -466,18 +505,18 @@
 
     const soundEngine = new SoundEngine();
 
-    // --- 關卡地圖數據 ---
+    // --- 關卡地圖數據 (隱藏機制名稱) ---
     const LEVELS = [
-      { id: 1, name: "Level 1", desc: "機制一：動態圖形積木", time: 240, modules: ["m1"] },
-      { id: 2, name: "Level 2", desc: "機制二：筆的方向", time: 240, modules: ["m2"] },
-      { id: 3, name: "Level 3", desc: "機制三：圖案密碼", time: 240, modules: ["m3"] },
-      { id: 4, name: "Level 4", desc: "機制一 + 二 (雙重混合)", time: 300, modules: ["m2", "m1"] },
-      { id: 5, name: "Level 5", desc: "機制二 + 三 (雙重混合)", time: 300, modules: ["m2", "m3"] },
-      { id: 6, name: "Level 6", desc: "機制一 + 四 (斷音摩斯積木)", time: 300, modules: ["m4", "m1"] },
-      { id: 7, name: "Level 7", desc: "機制二 + 四 (摩斯燈號方向)", time: 300, modules: ["m4", "m2"] },
-      { id: 8, name: "Level 8", desc: "機制三 + 四 (摩斯圖案解密)", time: 300, modules: ["m4", "m3"] },
-      { id: 9, name: "Level 9", desc: "機制一 + 二 + 三 (三重混合)", time: 360, modules: ["m2", "m1", "m3"] },
-      { id: 10, name: "Level 10", desc: "終極全機制大混戰 (四重極限)", time: 420, modules: ["m4", "m2", "m1", "m3"] }
+      { id: 1, name: "Level 1", time: 240, modules: ["m1"] },
+      { id: 2, name: "Level 2", time: 240, modules: ["m2"] },
+      { id: 3, name: "Level 3", time: 240, modules: ["m3"] },
+      { id: 4, name: "Level 4", time: 300, modules: ["m2", "m1"] },
+      { id: 5, name: "Level 5", time: 300, modules: ["m2", "m3"] },
+      { id: 6, name: "Level 6", time: 300, modules: ["m4", "m1"] },
+      { id: 7, name: "Level 7", time: 300, modules: ["m4", "m2"] },
+      { id: 8, name: "Level 8", time: 300, modules: ["m4", "m3"] },
+      { id: 9, name: "Level 9", time: 360, modules: ["m2", "m1", "m3"] },
+      { id: 10, name: "Level 10", time: 420, modules: ["m4", "m2", "m1", "m3"] }
     ];
 
     const MORSE_CODE = {
@@ -488,13 +527,25 @@
       'Y': '-.--', 'Z': '--..'
     };
 
+    const COLOR_TABLES = {
+      red: { 1: '紅', 2: '綠', 3: '黃', 4: '藍', 5: '橙', 6: '淺藍' },
+      blue: { 1: '藍', 2: '黃', 3: '紅', 4: '綠', 5: '淺藍', 6: '橙' },
+      green: { 1: '黃', 2: '藍', 3: '綠', 4: '橙', 5: '紅', 6: '淺藍' }
+    };
+
+    const COLOR_HEX = {
+      '紅': '#ef4444', '綠': '#10b981', '黃': '#eab308', 
+      '藍': '#3b82f6', '橙': '#f97316', '淺藍': '#38bdf8'
+    };
+
     let currentLevel = null;
     let timerInterval = null;
     let remainingTime = 0;
     let generatedData = {};
-    let userInputs = { m2_arrows: [], m3_shapes: [] };
+    let userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
+    let m2KeyboardUnlocked = false;
 
-    // 初始化選單
+    // 初始化關卡列表
     function initMenu() {
       const grid = document.getElementById('menu-grid');
       grid.innerHTML = '';
@@ -503,8 +554,8 @@
         card.className = 'level-card';
         card.onclick = () => startLevel(lvl.id);
         card.innerHTML = `
-          <div class="level-title">${lvl.name} (${Math.floor(lvl.time/60)}分鐘)</div>
-          <div class="level-desc">${lvl.desc}</div>
+          <div class="level-title">${lvl.name}</div>
+          <div class="level-time">⏳ 限時 ${Math.floor(lvl.time/60)} 分鐘</div>
         `;
         grid.appendChild(card);
       });
@@ -517,7 +568,7 @@
       document.getElementById('screen-game').classList.remove('hidden');
       document.getElementById('game-title').innerText = currentLevel.name;
       
-      userInputs = { m2_arrows: [], m3_shapes: [] };
+      resetInputs();
       document.getElementById('status-msg').innerText = '';
       document.getElementById('active-panel').classList.remove('active');
       
@@ -527,30 +578,50 @@
       soundEngine.startBGM();
     }
 
-    // 隨機生成謎題
+    function resetInputs() {
+      userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
+      m2KeyboardUnlocked = false;
+    }
+
+    // 隨機生成題目
     function generateRandomPuzzle() {
       generatedData = {};
       
-      // 機制一
-      const num1 = Math.floor(Math.random() * 40) + 10;
-      const num2 = Math.floor(Math.random() * 40) + 10;
-      const num3 = Math.floor(Math.random() * 40) + 10;
-      generatedData.m1 = { expr: `${num1} + ${num2} + ${num3}` };
+      // 機制一隨機邏輯
+      const lightKeys = ['red', 'blue', 'green'];
+      const chosenLight = lightKeys[Math.floor(Math.random() * lightKeys.length)];
+      const num1 = Math.floor(Math.random() * 6) + 1; // 1-6
+      const num2 = Math.floor(Math.random() * 6) + 1; // 1-6
+      
+      const correctColor1 = COLOR_TABLES[chosenLight][num1];
+      const correctColor2 = COLOR_TABLES[chosenLight][num2];
 
-      // 機制二
+      generatedData.m1 = {
+        light: chosenLight,
+        expr: `${num1 * 10 + 5} + ${num2 * 10 + 2}`, // 生成算式
+        targetColors: [correctColor1, correctColor2] // 底層 -> 上層 正確顏色
+      };
+
+      // 機制二隨機鍵盤順序
       const colors = ['red', 'blue', 'green', 'yellow'];
       generatedData.m2 = {
         color: colors[Math.floor(Math.random() * colors.length)],
+        shuffledKeys: ['🔴', '🔵', '🟢', '🟡'].sort(() => Math.random() - 0.5),
         targetArrows: ['↑', '→', '↓', '←']
       };
 
-      // 機制三
-      const shapes = ['🌟', '◯', '✖️', '△'];
+      // 機制三隨機數字序列 (4 個數字)
+      let nums = [];
+      while(nums.length < 4) {
+        let n = Math.floor(Math.random() * 50) + 1;
+        if (!nums.includes(n)) nums.push(n);
+      }
       generatedData.m3 = {
-        targetShapes: [...shapes].sort(() => Math.random() - 0.5)
+        numbers: nums,
+        targetShapes: ['🌟', '◯', '✖️', '△'].sort(() => Math.random() - 0.5)
       };
 
-      // 機制四 (4 位摩斯字母)
+      // 機制四摩斯字母
       const letters = Object.keys(MORSE_CODE);
       let word = "";
       for (let i = 0; i < 4; i++) {
@@ -565,10 +636,10 @@
       container.innerHTML = '';
 
       const moduleNames = {
-        'm1': { title: '機制一：圖形積木', icon: '🧱' },
-        'm2': { title: '機制二：筆的方向', icon: '✏️' },
-        'm3': { title: '機制三：圖案密碼', icon: '🌟' },
-        'm4': { title: '機制四：斷音摩斯密碼', icon: '📡' }
+        'm1': { title: '區域 A 解密', icon: '🧱' },
+        'm2': { title: '區域 B 解密', icon: '✏️' },
+        'm3': { title: '區域 C 解密', icon: '🌟' },
+        'm4': { title: '區域 D 解密', icon: '📡' }
       };
 
       currentLevel.modules.forEach(modKey => {
@@ -578,7 +649,6 @@
         card.innerHTML = `
           <div style="font-size: 2rem; margin-bottom: 8px;">${moduleNames[modKey].icon}</div>
           <h3>${moduleNames[modKey].title}</h3>
-          <p style="font-size: 0.8rem; color: #94a3b8;">點擊展開內容</p>
         `;
         container.appendChild(card);
       });
@@ -590,37 +660,48 @@
       panel.classList.add('active');
       
       if (modKey === 'm1') {
+        const lightColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981' };
         panel.innerHTML = `
-          <h3>🧱 機制一：積木算式</h3>
-          <div class="math-expr">${generatedData.m1.expr}</div>
-          <p style="text-align: center; color: #94a3b8;">請計算層數與顏色，盲砌實體積木後由工作人員輸入 Admin 驗收密碼：</p>
-          <div class="input-group">
-            <input type="text" id="admin-pass" placeholder="Admin 驗收碼">
-            <button class="btn-submit" onclick="verifyAdmin()">驗收通關</button>
+          <h3>區域 A：積木色彩驗證</h3>
+          <div class="light-box" style="background: ${lightColorMap[generatedData.m1.light]}"></div>
+          <div style="font-size: 1.8rem; text-align: center; color: #facc15; margin: 12px 0;">${generatedData.m1.expr}</div>
+          <div style="text-align: center; margin-bottom: 8px;" id="m1-input-display">請點選顏色 (底層 ➔ 上層)：無</div>
+          <div class="color-picker-grid">
+            ${['紅', '綠', '黃', '藍', '橙', '淺藍'].map(c => 
+              `<button class="btn-color" style="background: ${COLOR_HEX[c]}" onclick="pressM1Color('${c}')"></button>`
+            ).join('')}
+          </div>
+          <div style="text-align: center; margin-top: 16px;">
+            <button class="btn-submit" onclick="submitM1()">驗證積木密碼</button>
           </div>
         `;
       } else if (modKey === 'm2') {
-        const colorMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981', yellow: '#eab308' };
+        const lightMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981', yellow: '#eab308' };
         panel.innerHTML = `
-          <h3>✏️ 機制二：筆的方向與燈號</h3>
-          <div class="light-box" style="background: ${colorMap[generatedData.m2.color]}"></div>
-          <p style="text-align: center;">盲猴依指示依序點擊 4 個方向鍵：</p>
-          <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="arrow-input-display">已輸入: 無</div>
-          <div class="arrow-grid">
-            <div></div><button class="btn-arrow" onclick="pressArrow('↑')">↑</button><div></div>
-            <button class="btn-arrow" onclick="pressArrow('←')">←</button>
-            <button class="btn-arrow" onclick="pressArrow('↓')">↓</button>
-            <button class="btn-arrow" onclick="pressArrow('→')">→</button>
+          <h3>區域 B：方向鎖機制</h3>
+          <div class="light-box" style="background: ${lightMap[generatedData.m2.color]}"></div>
+          <div style="text-align: center; margin-bottom: 12px;">
+            <button class="btn-submit" style="background: var(--warning-color); color: #000;" onclick="unlockM2Keyboard()">實體擺放完成</button>
           </div>
-          <div style="text-align:center; margin-top:12px;">
-            <button class="btn-submit" onclick="submitM2()">提交方向鍵</button>
+          <div id="m2-keyboard-area" class="hidden">
+            <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="arrow-display">請輸入方向：無</div>
+            <div class="keyboard-grid">
+              ${generatedData.m2.shuffledKeys.map((k, idx) => `
+                <button class="btn-key" style="background: #334155;" onclick="pressM2Key('${k}')">${k}<br><span style="font-size:0.7rem; color:#94a3b8;">[按鍵 ${idx+1}]</span></button>
+              `).join('')}
+            </div>
+            <div style="text-align:center; margin-top:16px;">
+              <button class="btn-submit" onclick="submitM2()">提交方向</button>
+            </div>
           </div>
         `;
       } else if (modKey === 'm3') {
         panel.innerHTML = `
-          <h3>🌟 機制三：圖案順序密碼</h3>
-          <p style="text-align: center;">請依據指示，順序點擊圖案按鈕：</p>
-          <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="shape-input-display">已選擇: 無</div>
+          <h3>區域 C：數字圖案解密</h3>
+          <div style="font-size: 1.5rem; text-align: center; letter-spacing: 3px; color: #facc15; margin: 12px 0;">
+            [ ${generatedData.m3.numbers.join(' , ')} ]
+          </div>
+          <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="shape-display">已選擇: 無</div>
           <div class="shape-grid">
             <button class="btn-shape" onclick="pressShape('🌟')">🌟</button>
             <button class="btn-shape" onclick="pressShape('◯')">◯</button>
@@ -628,15 +709,15 @@
             <button class="btn-shape" onclick="pressShape('△')">△</button>
           </div>
           <div style="text-align:center; margin-top:16px;">
-            <button class="btn-submit" onclick="submitM3()">提交圖案鎖</button>
+            <button class="btn-submit" onclick="submitM3()">提交圖案</button>
           </div>
         `;
       } else if (modKey === 'm4') {
         panel.innerHTML = `
-          <h3>📡 機制四：斷音摩斯密碼 (前有聲 ➔ 後純燈光)</h3>
+          <h3>區域 D：斷音摩斯燈號</h3>
           <div id="morse-light-box" class="morse-light"></div>
           <div style="text-align: center;">
-            <button class="btn-submit" onclick="playMorseSequence()">▶ 播放摩斯密碼</button>
+            <button class="btn-submit" onclick="playMorseSequence()">▶ 播放摩斯燈號</button>
           </div>
           <div class="input-group">
             <input type="text" id="morse-input" placeholder="輸入 4 個字母">
@@ -646,24 +727,97 @@
       }
     }
 
-    // 摩斯密碼播放 (斷音轉折)
+    // --- 機制一互動 ---
+    function pressM1Color(color) {
+      if (userInputs.m1_colors.length < 2) {
+        userInputs.m1_colors.push(color);
+        document.getElementById('m1-input-display').innerText = "已選擇: " + userInputs.m1_colors.join(' ➔ ');
+      }
+    }
+
+    function submitM1() {
+      const target = generatedData.m1.targetColors;
+      const input = userInputs.m1_colors;
+      if (input.length === 2 && input[0] === target[0] && input[1] === target[1]) {
+        soundEngine.playVictory();
+        showStatus("積木顏色密碼驗證成功！", true);
+      } else {
+        triggerPenalty("積木密碼錯誤！倒數時間扣減 20 秒！");
+        userInputs.m1_colors = [];
+        document.getElementById('m1-input-display').innerText = "請點選顏色 (底層 ➔ 上層)：無";
+      }
+    }
+
+    // --- 機制二互動 ---
+    function unlockM2Keyboard() {
+      m2KeyboardUnlocked = true;
+      document.getElementById('m2-keyboard-area').classList.remove('hidden');
+    }
+
+    function pressM2Key(keySymbol) {
+      if (!m2KeyboardUnlocked) return;
+      if (userInputs.m2_arrows.length < 4) {
+        userInputs.m2_arrows.push(keySymbol);
+        document.getElementById('arrow-display').innerText = "已輸入: " + userInputs.m2_arrows.join(' ');
+      }
+    }
+
+    function submitM2() {
+      if (userInputs.m2_arrows.length === 4) {
+        soundEngine.playVictory();
+        showStatus("方向鎖解鎖成功！", true);
+      } else {
+        triggerPenalty("請點選完整的 4 個方向鍵！");
+      }
+    }
+
+    // 支援鍵盤按鍵 1, 2, 3, 4
+    window.addEventListener('keydown', (e) => {
+      if (!m2KeyboardUnlocked) return;
+      if (['1', '2', '3', '4'].includes(e.key)) {
+        const idx = parseInt(e.key) - 1;
+        const keySymbol = generatedData.m2.shuffledKeys[idx];
+        if (keySymbol) pressM2Key(keySymbol);
+      }
+    });
+
+    // --- 機制三互動 ---
+    function pressShape(shape) {
+      if (userInputs.m3_shapes.length < 4) {
+        userInputs.m3_shapes.push(shape);
+        document.getElementById('shape-display').innerText = "已選擇: " + userInputs.m3_shapes.join(' ');
+      }
+    }
+
+    function submitM3() {
+      const input = userInputs.m3_shapes.join('');
+      if (userInputs.m3_shapes.length === 4) {
+        soundEngine.playVictory();
+        showStatus("圖案順序驗證成功！", true);
+      } else {
+        triggerPenalty("圖案密碼錯誤！扣減 20 秒！");
+        userInputs.m3_shapes = [];
+        document.getElementById('shape-display').innerText = "已選擇: 無";
+      }
+    }
+
+    // --- 機制四摩斯燈 (短閃 0.5s / 長閃 1.5s) ---
     function playMorseSequence() {
       const word = generatedData.m4.word;
       const light = document.getElementById('morse-light-box');
       let timeline = [];
       
-      // 前 2 字有聲有畫，後 2 字純畫面無聲
       for (let i = 0; i < word.length; i++) {
         const letter = word[i];
         const code = MORSE_CODE[letter];
         const isMuted = (i >= 2);
 
         for (let symbol of code) {
-          const duration = (symbol === '.') ? 200 : 600;
+          const duration = (symbol === '.') ? 500 : 1500; // 短閃0.5s, 長閃1.5s
           timeline.push({ duration, isMuted });
-          timeline.push({ duration: 200, pause: true });
+          timeline.push({ duration: 400, pause: true });
         }
-        timeline.push({ duration: 600, pause: true });
+        timeline.push({ duration: 1200, pause: true });
       }
 
       let index = 0;
@@ -688,67 +842,27 @@
       runStep();
     }
 
-    // 互動按鈕邏輯
-    function pressArrow(dir) {
-      if (userInputs.m2_arrows.length < 4) {
-        userInputs.m2_arrows.push(dir);
-        document.getElementById('arrow-input-display').innerText = "已輸入: " + userInputs.m2_arrows.join(' ');
-      }
-    }
-
-    function submitM2() {
-      if (userInputs.m2_arrows.length === 4) {
-        showStatus("方向解鎖成功！", true);
-      } else {
-        showStatus("請輸入完整的 4 個方向！", false);
-      }
-    }
-
-    function pressShape(shape) {
-      if (userInputs.m3_shapes.length < 4) {
-        userInputs.m3_shapes.push(shape);
-        document.getElementById('shape-input-display').innerText = "已選擇: " + userInputs.m3_shapes.join(' ');
-      }
-    }
-
-    function submitM3() {
-      const target = generatedData.m3.targetShapes.join('');
-      const input = userInputs.m3_shapes.join('');
-      if (input === target) {
-        showStatus("圖案鎖破解成功！通關成功！", true);
-      } else {
-        showStatus("圖案順序錯誤！", false);
-        triggerExplosion();
-        userInputs.m3_shapes = [];
-        document.getElementById('shape-input-display').innerText = "已選擇: 無";
-      }
-    }
-
     function submitM4() {
       const val = document.getElementById('morse-input').value.toUpperCase().trim();
       if (val === generatedData.m4.word) {
+        soundEngine.playVictory();
         showStatus("摩斯密碼驗證正確！", true);
       } else {
-        showStatus("摩斯密碼錯誤！", false);
-        triggerExplosion();
+        triggerPenalty("摩斯密碼錯誤！扣減 20 秒！");
       }
     }
 
-    function verifyAdmin() {
-      const pass = document.getElementById('admin-pass').value;
-      if (pass === "8888") {
-        showStatus("Admin 驗收成功！過關！", true);
-      } else {
-        showStatus("Admin 驗收密碼錯誤！", false);
-        triggerExplosion();
-      }
-    }
-
-    function triggerExplosion() {
+    // 錯誤懲罰機制 (扣減 20 秒 + 爆炸聲)
+    function triggerPenalty(msg) {
       soundEngine.playExplosion();
+      remainingTime = Math.max(0, remainingTime - 20);
+      updateTimerDisplay();
+      
       const container = document.getElementById('mainContainer');
       container.classList.add('shake');
       setTimeout(() => container.classList.remove('shake'), 350);
+
+      showStatus(msg, false);
     }
 
     function showStatus(msg, isSuccess) {
@@ -757,7 +871,7 @@
       el.className = `status-msg ${isSuccess ? 'success' : 'error'}`;
     }
 
-    // 計時器邏輯
+    // 計時器
     function startTimer(seconds) {
       clearInterval(timerInterval);
       remainingTime = seconds;
@@ -768,8 +882,8 @@
         updateTimerDisplay();
         if (remainingTime <= 0) {
           clearInterval(timerInterval);
-          triggerExplosion();
-          showStatus("⏰ 時間到！拆彈失敗！", false);
+          soundEngine.playFinalExplosion(); // 終極爆破音效
+          showStatus("⏰ 時間到！任務爆炸失敗！", false);
         }
       }, 1000);
     }
@@ -787,7 +901,6 @@
       document.getElementById('screen-menu').classList.remove('hidden');
     }
 
-    // 啟動選單
     initMenu();
   </script>
 </body>
