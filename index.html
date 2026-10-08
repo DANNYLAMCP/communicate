@@ -663,28 +663,27 @@
     function generateRandomPuzzle() {
       generatedData = {};
       
-      // ===== 機制一修復核心演算法 =====
+      // ===== 機制一修復：完美一對一空間繪製對齊 =====
       const m1Light = ['red', 'blue', 'green'][Math.floor(Math.random() * 3)];
       const gridNums = [];
       for(let i=0; i<6; i++) {
         gridNums.push(Math.floor(Math.random() * 6) + 1);
       }
       
-      // 位置映射嚴格定義：
-      // pos 0: 下層左 (算式1十位) | pos 1: 下層中 (算式1個位) | pos 2: 下層右 (算式2十位)
-      // pos 3: 上層左 (算式2個位) | pos 4: 上層中 (算式3十位) | pos 5: 上層右 (算式3個位)
+      // pos 0: 第1層左(算式1十位) | pos 1: 第1層中(算式1個位) | pos 2: 第1層右(算式2十位)
+      // pos 3: 第2層左(算式2個位) | pos 4: 第2層中(算式3十位) | pos 5: 第2層右(算式3個位)
       const gridColors = gridNums.map(n => COLOR_TABLES_M1[m1Light][n]);
 
-      // 隨機選取 3 個位置作為高亮標示
+      // 隨機選取 3 個位置 (0~5) 作為高亮標示
       const stepTargets = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).slice(0, 3);
       const targetColors = stepTargets.map(pos => gridColors[pos]);
 
       generatedData.m1 = {
         light: m1Light,
         exprs: [
-          `${gridNums[0]*10 + gridNums[1]}`, // 算式1
-          `${gridNums[2]*10 + gridNums[3]}`, // 算式2
-          `${gridNums[4]*10 + gridNums[5]}`  // 算式3
+          `${gridNums[0]*10 + gridNums[1]}`, // 算式 1
+          `${gridNums[2]*10 + gridNums[3]}`, // 算式 2
+          `${gridNums[4]*10 + gridNums[5]}`  // 算式 3
         ],
         stepTargets: stepTargets,
         targetColors: targetColors
@@ -757,6 +756,8 @@
         // 渲染 3 個步驟對應的 2x3 圖示 (畫面上排為第2層[3,4,5] / 下排為第1層[0,1,2])
         const stepsHTML = generatedData.m1.stepTargets.map((targetIdx, stepNum) => {
           let cellsHTML = '';
+          // 畫面上排 (第2層): 3 (左), 4 (中), 5 (右)
+          // 畫面下排 (第1層): 0 (左), 1 (中), 2 (右)
           const displayOrder = [3, 4, 5, 0, 1, 2];
           displayOrder.forEach(cellIdx => {
             const isHighlight = (cellIdx === targetIdx) ? 'highlight' : '';
