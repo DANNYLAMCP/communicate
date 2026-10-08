@@ -64,7 +64,6 @@
       40%, 60% { transform: translate3d(6px, 0, 0); }
     }
 
-    /* 主選單關卡列表 */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -99,7 +98,6 @@
       color: var(--warning-color);
     }
 
-    /* 遊戲進行頂部欄 */
     .game-header {
       display: flex;
       justify-content: space-between;
@@ -129,7 +127,6 @@
 
     .btn-back:hover { background: #64748b; }
 
-    /* 混合機制卡片區 */
     .modules-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -157,7 +154,6 @@
       margin-bottom: 8px;
     }
 
-    /* 展開面板 */
     .view-panel {
       background: #0f172a;
       border: 2px solid var(--accent-color);
@@ -169,7 +165,6 @@
 
     .view-panel.active { display: block; }
 
-    /* 燈號指示框 */
     .light-box {
       width: 70px;
       height: 70px;
@@ -178,7 +173,6 @@
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     }
 
-    /* 機制一：3步驟6格積木圖示 */
     .steps-grid {
       display: flex;
       justify-content: space-around;
@@ -216,7 +210,6 @@
       box-shadow: 0 0 8px #f59e0b;
     }
 
-    /* 顏色選擇按鈕 */
     .color-picker-grid {
       display: flex;
       justify-content: center;
@@ -236,7 +229,6 @@
 
     .btn-color:hover { transform: scale(1.1); }
 
-    /* 機制二：亂序顏色顯示欄 */
     .color-seq-box {
       display: flex;
       justify-content: center;
@@ -248,7 +240,6 @@
       border-radius: 8px;
     }
 
-    /* 機制三：圖案按鈕 */
     .shape-grid {
       display: flex;
       justify-content: center;
@@ -269,7 +260,6 @@
 
     .btn-shape:hover { background: #475569; }
 
-    /* 機制四：摩斯燈 */
     .morse-light {
       width: 80px;
       height: 80px;
@@ -284,7 +274,6 @@
       box-shadow: 0 0 30px #f59e0b;
     }
 
-    /* 通用輸入區 */
     .input-group {
       display: flex;
       justify-content: center;
@@ -315,7 +304,6 @@
 
     .btn-submit:hover { background: var(--accent-hover); }
 
-    /* 音量列 */
     .audio-bar {
       display: flex;
       align-items: center;
@@ -325,7 +313,6 @@
       border-top: 1px solid #334155;
     }
 
-    /* 成功通關彈窗 (Modal) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -373,14 +360,11 @@
   </header>
 
   <div class="container" id="mainContainer">
-    
-    <!-- 主選單：選擇關卡 -->
     <div id="screen-menu">
       <h2 style="margin-bottom: 16px;">請選擇關卡：</h2>
       <div class="menu-grid" id="menu-grid"></div>
     </div>
 
-    <!-- 遊戲進行區域 -->
     <div id="screen-game" class="hidden">
       <div class="game-header">
         <button class="btn-back" onclick="goToMenu()">← 返回關卡選單</button>
@@ -388,26 +372,18 @@
         <div class="timer" id="timer-display">04:00</div>
       </div>
 
-      <!-- 入口卡片區 -->
       <div class="modules-container" id="modules-container"></div>
-
-      <!-- 詳細內容展開面板 -->
       <div id="active-panel" class="view-panel"></div>
-
-      <!-- 訊息提示區 -->
       <div id="status-msg" class="status-msg"></div>
 
-      <!-- 音量控制列 -->
       <div class="audio-bar">
         <button class="btn-back" style="padding: 4px 10px; font-size: 0.8rem;" onclick="soundEngine.toggleMute()" id="mute-btn">靜音</button>
         <span style="font-size: 0.85rem; color: #94a3b8;">BGM 音量:</span>
         <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5" oninput="soundEngine.setVolume(this.value)" style="flex-grow: 1; accent-color: var(--accent-color);">
       </div>
     </div>
-
   </div>
 
-  <!-- 成功通關彈窗 -->
   <div id="victory-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-title">🎉 任務成功拆彈！</div>
@@ -418,7 +394,6 @@
   </div>
 
   <script>
-    // --- Web Audio 音效引擎 ---
     class SoundEngine {
       constructor() {
         this.ctx = null;
@@ -577,7 +552,6 @@
 
     const soundEngine = new SoundEngine();
 
-    // --- 關卡地圖數據 ---
     const LEVELS = [
       { id: 1, name: "Level 1", time: 240, modules: ["m1"] },
       { id: 2, name: "Level 2", time: 240, modules: ["m2"] },
@@ -599,14 +573,12 @@
       'Y': '-.--', 'Z': '--..'
     };
 
-    // ** 機制一校正版顏色對照表 **
     const COLOR_TABLES_M1 = {
       red:   { 1: '紅', 2: '綠', 3: '黃', 4: '藍', 5: '橙', 6: '淺藍' },
       blue:  { 1: '藍', 2: '黃', 3: '紅', 4: '綠', 5: '淺藍', 6: '橙' },
       green: { 1: '黃', 2: '藍', 3: '綠', 4: '橙', 5: '紅', 6: '淺藍' }
     };
 
-    // ** 機制二顏色與方向對照表 (紅/藍/綠/黑) **
     const COLOR_ARROW_MAP_M2 = {
       red:   { '🔴': '↑', '🔵': '↓', '🟢': '←', '🖤': '→' },
       blue:  { '🔴': '↓', '🔵': '←', '🟢': '→', '🖤': '↑' },
@@ -666,18 +638,23 @@
     function generateRandomPuzzle() {
       generatedData = {};
       
-      // 機制一生成邏輯
+      // 機制一修復：完美對齊 2x3 格子順序 [下層左0, 下層中1, 下層右2, 上層左3, 上層中4, 上層右5]
       const m1Light = ['red', 'blue', 'green'][Math.floor(Math.random() * 3)];
       const gridNums = [];
       for(let i=0; i<6; i++) {
         gridNums.push(Math.floor(Math.random() * 6) + 1);
       }
+      
+      // 根據位置精確對應顏色
       const gridColors = gridNums.map(n => COLOR_TABLES_M1[m1Light][n]);
+
+      // 隨機選 3 個位置高亮 (0~5)
       const stepTargets = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).slice(0, 3);
       const targetColors = stepTargets.map(pos => gridColors[pos]);
 
       generatedData.m1 = {
         light: m1Light,
+        // 算式格式化：[ (0十位, 1個位), (2十位, 3個位), (4十位, 5個位) ]
         exprs: [
           `${gridNums[0]*10 + gridNums[1]}`,
           `${gridNums[2]*10 + gridNums[3]}`,
@@ -687,7 +664,7 @@
         targetColors: targetColors
       };
 
-      // 機制二生成邏輯
+      // 機制二
       const m2Light = ['red', 'blue', 'green', 'black'][Math.floor(Math.random() * 4)];
       const shuffledColors = ['🔴', '🔵', '🟢', '🖤'].sort(() => Math.random() - 0.5);
       const targetArrows = shuffledColors.map(c => COLOR_ARROW_MAP_M2[m2Light][c]);
@@ -698,7 +675,7 @@
         targetArrows: targetArrows
       };
 
-      // 機制三數字序列
+      // 機制三
       let nums = [];
       while(nums.length < 4) {
         let n = Math.floor(Math.random() * 50) + 1;
@@ -709,7 +686,7 @@
         targetShapes: ['🌟', '◯', '✖️', '△'].sort(() => Math.random() - 0.5)
       };
 
-      // 機制四摩斯字母
+      // 機制四
       const letters = Object.keys(MORSE_CODE);
       let word = "";
       for (let i = 0; i < 4; i++) {
@@ -751,6 +728,7 @@
       if (modKey === 'm1') {
         const lightColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981' };
         
+        // 渲染 3 個步驟對應的 2x3 圖示 (顯示上排: 3,4,5 / 下排: 0,1,2)
         const stepsHTML = generatedData.m1.stepTargets.map((targetIdx, stepNum) => {
           let cellsHTML = '';
           const displayOrder = [3, 4, 5, 0, 1, 2];
@@ -830,7 +808,6 @@
       }
     }
 
-    // --- 機制一互動 ---
     function pressM1Color(color) {
       if (userInputs.m1_colors.length < 3) {
         userInputs.m1_colors.push(color);
@@ -857,7 +834,6 @@
       }
     }
 
-    // --- 機制二鍵盤方向鍵輸入 ---
     window.addEventListener('keydown', (e) => {
       const arrowMap = { 'ArrowUp': '↑', 'ArrowDown': '↓', 'ArrowLeft': '←', 'ArrowRight': '→' };
       if (arrowMap[e.key]) {
@@ -889,7 +865,6 @@
       }
     }
 
-    // --- 機制三互動 ---
     function pressShape(shape) {
       if (userInputs.m3_shapes.length < 4) {
         userInputs.m3_shapes.push(shape);
@@ -907,7 +882,6 @@
       }
     }
 
-    // --- 機制四摩斯燈 ---
     function playMorseSequence() {
       const word = generatedData.m4.word;
       const light = document.getElementById('morse-light-box');
@@ -955,16 +929,14 @@
       }
     }
 
-    // 模組通關標示與整體關卡過關檢測
     function markModuleComplete(modKey, successMsg) {
       soundEngine.playVictory();
       completedModules.add(modKey);
       showStatus(successMsg, true);
       renderModuleCards();
 
-      // 檢查是否當前關卡的所有機制都已破解
       if (completedModules.size === currentLevel.modules.length) {
-        clearInterval(timerInterval); // 停止計時
+        clearInterval(timerInterval);
         const timeUsed = totalLevelTime - remainingTime;
         const minutes = Math.floor(timeUsed / 60);
         const seconds = timeUsed % 60;
