@@ -1,196 +1,344 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-HK">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>關卡音效網頁遊戲控制台</title>
+  <title>三猴任務：感官剝奪解密大挑戰</title>
   <style>
     :root {
-      --bg-color: #121214;
-      --card-bg: #1e1e24;
-      --accent-color: #4f46e5;
-      --accent-hover: #4338ca;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #06b6d4;
+      --accent-hover: #0891b2;
+      --text-color: #f8fafc;
       --danger-color: #ef4444;
       --warning-color: #f59e0b;
-      --text-color: #f3f4f6;
+      --success-color: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .game-card {
-      background-color: var(--card-bg);
-      border: 1px solid #2d2d38;
-      border-radius: 16px;
-      padding: 30px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      text-align: center;
-      box-sizing: border-box;
-    }
-
-    h2 {
-      margin-top: 0;
-      font-size: 1.5rem;
-      letter-spacing: 0.5px;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 20px;
-      background-color: #2b2b36;
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-      color: #a1a1aa;
-    }
-
-    .mechanism-section {
-      margin: 25px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      padding: 20px;
     }
 
-    .lamp-label {
-      font-size: 0.85rem;
-      color: #a1a1aa;
+    header {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .lamp {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background-color: #33333f;
-      border: 3px solid #444454;
-      transition: all 0.1s ease;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      color: var(--accent-color);
     }
 
-    .lamp.active {
-      background-color: #facc15;
-      border-color: #fde047;
-      box-shadow: 0 0 25px #facc15, inset 0 0 10px #ffffff;
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
-    .shake-box {
-      transition: transform 0.1s;
-    }
-
+    /* 震動與爆炸效果 */
     .shake {
       animation: shakeAndFlash 0.35s cubic-bezier(.36,.07,.19,.97) both;
     }
 
     @keyframes shakeAndFlash {
-      10%, 90% { transform: translate3d(-2px, 0, 0); background-color: #3f1d1d; }
+      10%, 90% { transform: translate3d(-2px, 0, 0); background-color: #450a0a; }
       20%, 80% { transform: translate3d(4px, 0, 0); }
       30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
       40%, 60% { transform: translate3d(6px, 0, 0); }
     }
 
-    .button-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    /* 主選單關卡網格 */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
     }
 
-    button {
-      background-color: var(--accent-color);
+    .level-card {
+      background: #334155;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .level-card:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    .level-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #38bdf8;
+      margin-bottom: 6px;
+    }
+
+    .level-desc {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* 遊戲進行中頂部標題列 */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 12px;
+    }
+
+    .timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--warning-color);
+      background: #0f172a;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .btn-back {
+      background: #475569;
       color: white;
       border: none;
-      padding: 12px 18px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-back:hover {
+      background: #64748b;
+    }
+
+    /* 混合關卡入口卡片 */
+    .modules-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .module-card {
+      background: #0f172a;
+      border: 1px solid #334155;
       border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
+      padding: 20px;
+      text-align: center;
       cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
+      transition: all 0.2s;
     }
 
-    button:hover {
-      background-color: var(--accent-hover);
+    .module-card:hover {
+      border-color: var(--accent-color);
+      background: #182238;
     }
 
-    button:active {
-      transform: scale(0.98);
+    .module-card h3 {
+      color: var(--accent-color);
+      margin-bottom: 8px;
     }
 
-    button.danger-btn {
-      background-color: var(--danger-color);
-    }
-    button.danger-btn:hover {
-      background-color: #dc2626;
-    }
-
-    button.warning-btn {
-      background-color: var(--warning-color);
-      color: #18181b;
-    }
-    button.warning-btn:hover {
-      background-color: #d97706;
+    /* 展開面板 */
+    .view-panel {
+      background: #0f172a;
+      border: 2px solid var(--accent-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+      display: none;
     }
 
-    .audio-controls {
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid #2d2d38;
+    .view-panel.active {
+      display: block;
+    }
+
+    /* 機制一：算式 */
+    .math-expr {
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-align: center;
+      color: #facc15;
+      margin: 16px 0;
+    }
+
+    /* 機制二：4色燈號與方向鍵 */
+    .light-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 16px auto;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .arrow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      gap: 8px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .btn-arrow {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+      background: #334155;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-arrow:hover { background: #475569; }
+
+    /* 機制三：圖案鍵 */
+    .shape-grid {
       display: flex;
-      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .btn-shape {
+      width: 70px;
+      height: 70px;
+      font-size: 2rem;
+      background: #334155;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-shape:hover { background: #475569; }
+
+    /* 機制四：摩斯燈 */
+    .morse-light {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #334155;
+      margin: 20px auto;
+      transition: background-color 0.1s;
+    }
+
+    .morse-light.active {
+      background: #f59e0b;
+      box-shadow: 0 0 30px #f59e0b;
+    }
+
+    /* 輸入區塊 */
+    .input-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: white;
+      text-align: center;
+      width: 180px;
+    }
+
+    .btn-submit {
+      background: var(--accent-color);
+      color: #0f172a;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-submit:hover { background: var(--accent-hover); }
+
+    /* 控制面板音量與狀態 */
+    .audio-bar {
+      display: flex;
       justify-content: space-between;
-      gap: 10px;
-    }
-
-    .slider-container {
-      display: flex;
       align-items: center;
-      gap: 10px;
-      flex-grow: 1;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #334155;
     }
 
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent-color);
-      cursor: pointer;
-    }
+    .hidden { display: none !important; }
+    .status-msg { text-align: center; margin-top: 12px; font-weight: bold; min-height: 24px; }
+    .status-msg.error { color: var(--danger-color); }
+    .status-msg.success { color: var(--success-color); }
   </style>
 </head>
 <body>
 
-  <div class="game-card shake-box" id="gameCard">
-    <h2>關卡音效控制台</h2>
-    <div class="status-badge" id="status">準備就緒，點擊下方按鈕測試</div>
+  <header>
+    <h1>三猴任務：感官剝奪解密網頁</h1>
+    <p style="color: #94a3b8;">1 盲 · 1 啞 · 1 聾 的極限默契挑戰</p>
+  </header>
 
-    <div class="mechanism-section">
-      <div class="lamp-label">機制 4 警示燈號</div>
-      <div class="lamp" id="lamp4"></div>
+  <div class="container" id="mainContainer">
+    
+    <!-- 主畫面：關卡選擇 -->
+    <div id="screen-menu">
+      <h2 style="margin-bottom: 16px;">請選擇挑戰關卡：</h2>
+      <div class="menu-grid" id="menu-grid"></div>
     </div>
 
-    <div class="button-group">
-      <button onclick="enterLevel()">▶ 進入關卡 (啟動 BGM)</button>
-      <button class="danger-btn" onclick="triggerExplosion()">💥 觸發爆炸音效</button>
-      <button class="warning-btn" onclick="triggerMechanism4()">💡 觸發機制 4 閃燈音效</button>
-      <button style="background-color: #4b5563;" onclick="exitLevel()">⏹ 離開關卡 (停止 BGM)</button>
-    </div>
+    <!-- 遊戲進行面板 -->
+    <div id="screen-game" class="hidden">
+      <div class="game-header">
+        <button class="btn-back" onclick="goToMenu()">← 返回關卡選單</button>
+        <h2 id="game-title">Level 1</h2>
+        <div class="timer" id="timer-display">04:00</div>
+      </div>
 
-    <div class="audio-controls">
-      <button style="padding: 6px 12px; font-size: 0.85rem;" onclick="toggleMute()" id="muteBtn">靜音</button>
-      <div class="slider-container">
-        <span style="font-size: 0.8rem; color: #a1a1aa;">音量</span>
-        <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5" oninput="changeVolume(this.value)">
+      <!-- 關卡入口卡片區 -->
+      <div class="modules-container" id="modules-container"></div>
+
+      <!-- 機制詳細內容展開面板 -->
+      <div id="active-panel" class="view-panel"></div>
+
+      <!-- 狀態提示與爆炸調試按鈕 -->
+      <div id="status-msg" class="status-msg"></div>
+
+      <!-- 音樂音量列 -->
+      <div class="audio-bar">
+        <button class="btn-back" style="padding: 4px 10px; font-size: 0.8rem;" onclick="soundEngine.toggleMute()" id="mute-btn">靜音</button>
+        <button class="btn-back" style="padding: 4px 10px; font-size: 0.8rem; background: var(--danger-color);" onclick="triggerExplosion()">💥 測試爆炸音效</button>
       </div>
     </div>
+
   </div>
 
   <script>
+    // --- 音效引擎 (Web Audio API) ---
     class SoundEngine {
       constructor() {
         this.ctx = null;
@@ -200,7 +348,6 @@
         this.bgmInterval = null;
         this.isPlayingBGM = false;
         this.isMuted = false;
-        this.lastVolume = 0.5;
       }
 
       init() {
@@ -213,37 +360,36 @@
           this.masterGain.connect(this.ctx.destination);
 
           this.bgmGain = this.ctx.createGain();
-          this.bgmGain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          this.bgmGain.gain.setValueAtTime(0.12, this.ctx.currentTime);
           this.bgmGain.connect(this.masterGain);
 
           this.sfxGain = this.ctx.createGain();
-          this.sfxGain.gain.setValueAtTime(1.0, this.ctx.currentTime);
+          this.sfxGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
           this.sfxGain.connect(this.masterGain);
         }
-
         if (this.ctx.state === 'suspended') {
           this.ctx.resume();
         }
       }
 
+      // 關卡背景音樂 (BGM)
       startBGM() {
         this.init();
         if (this.isPlayingBGM) return;
         this.isPlayingBGM = true;
 
-        const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
-        let noteIndex = 0;
+        const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; // C4, E4, G4, C5
+        let index = 0;
 
         this.bgmInterval = setInterval(() => {
           if (!this.isPlayingBGM) return;
-
           const osc = this.ctx.createOscillator();
           const noteGain = this.ctx.createGain();
 
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(melody[noteIndex % melody.length], this.ctx.currentTime);
+          osc.frequency.setValueAtTime(melody[index % melody.length], this.ctx.currentTime);
 
-          noteGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          noteGain.gain.setValueAtTime(0.15, this.ctx.currentTime);
           noteGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
 
           osc.connect(noteGain);
@@ -251,21 +397,18 @@
 
           osc.start();
           osc.stop(this.ctx.currentTime + 0.25);
-
-          noteIndex++;
-        }, 280);
+          index++;
+        }, 300);
       }
 
       stopBGM() {
         this.isPlayingBGM = false;
-        if (this.bgmInterval) {
-          clearInterval(this.bgmInterval);
-        }
+        if (this.bgmInterval) clearInterval(this.bgmInterval);
       }
 
-      playExplosionSound() {
+      // 爆炸音效
+      playExplosion() {
         this.init();
-
         const duration = 0.5;
         const bufferSize = this.ctx.sampleRate * duration;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -280,11 +423,11 @@
 
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1000, this.ctx.currentTime);
+        filter.frequency.setValueAtTime(800, this.ctx.currentTime);
         filter.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + duration);
 
         const expGain = this.ctx.createGain();
-        expGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+        expGain.gain.setValueAtTime(0.9, this.ctx.currentTime);
         expGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
 
         noise.connect(filter);
@@ -294,83 +437,358 @@
         noise.start();
       }
 
-      playBlinkSound() {
+      // 摩斯與閃燈嗶嗶聲
+      playBeep(duration) {
         this.init();
-
         const osc = this.ctx.createOscillator();
         const noteGain = this.ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1760, this.ctx.currentTime + 0.12);
+        osc.frequency.setValueAtTime(750, this.ctx.currentTime);
 
-        noteGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        noteGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+        noteGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        noteGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + (duration / 1000));
 
         osc.connect(noteGain);
         noteGain.connect(this.sfxGain);
 
         osc.start();
-        osc.stop(this.ctx.currentTime + 0.12);
+        osc.stop(this.ctx.currentTime + (duration / 1000));
       }
 
-      setVolume(val) {
+      toggleMute() {
         this.init();
-        this.masterGain.gain.setValueAtTime(val, this.ctx.currentTime);
+        this.isMuted = !this.isMuted;
+        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : 0.5, this.ctx.currentTime);
+        document.getElementById('mute-btn').innerText = this.isMuted ? "取消靜音" : "靜音";
       }
     }
 
-    const sound = new SoundEngine();
+    const soundEngine = new SoundEngine();
 
-    function enterLevel() {
-      sound.startBGM();
-      document.getElementById('status').innerText = "🔊 進入關卡：BGM 播放中";
+    // --- 關卡地圖數據 ---
+    const LEVELS = [
+      { id: 1, name: "Level 1", desc: "機制一：動態圖形積木", time: 240, modules: ["m1"] },
+      { id: 2, name: "Level 2", desc: "機制二：筆的方向", time: 240, modules: ["m2"] },
+      { id: 3, name: "Level 3", desc: "機制三：圖案密碼", time: 240, modules: ["m3"] },
+      { id: 4, name: "Level 4", desc: "機制一 + 二 (雙重混合)", time: 300, modules: ["m2", "m1"] },
+      { id: 5, name: "Level 5", desc: "機制二 + 三 (雙重混合)", time: 300, modules: ["m2", "m3"] },
+      { id: 6, name: "Level 6", desc: "機制一 + 四 (斷音摩斯積木)", time: 300, modules: ["m4", "m1"] },
+      { id: 7, name: "Level 7", desc: "機制二 + 四 (摩斯燈號方向)", time: 300, modules: ["m4", "m2"] },
+      { id: 8, name: "Level 8", desc: "機制三 + 四 (摩斯圖案解密)", time: 300, modules: ["m4", "m3"] },
+      { id: 9, name: "Level 9", desc: "機制一 + 二 + 三 (三重混合)", time: 360, modules: ["m2", "m1", "m3"] },
+      { id: 10, name: "Level 10", desc: "終極全機制大混戰 (四重極限)", time: 420, modules: ["m4", "m2", "m1", "m3"] }
+    ];
+
+    const MORSE_CODE = {
+      'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+      'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+      'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+      'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+      'Y': '-.--', 'Z': '--..'
+    };
+
+    let currentLevel = null;
+    let timerInterval = null;
+    let remainingTime = 0;
+    let generatedData = {};
+    let userInputs = { m2_arrows: [], m3_shapes: [] };
+
+    // 初始化選單
+    function initMenu() {
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = '';
+      LEVELS.forEach(lvl => {
+        const card = document.createElement('div');
+        card.className = 'level-card';
+        card.onclick = () => startLevel(lvl.id);
+        card.innerHTML = `
+          <div class="level-title">${lvl.name} (${Math.floor(lvl.time/60)}分鐘)</div>
+          <div class="level-desc">${lvl.desc}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // 開始關卡
+    function startLevel(levelId) {
+      currentLevel = LEVELS.find(l => l.id === levelId);
+      document.getElementById('screen-menu').classList.add('hidden');
+      document.getElementById('screen-game').classList.remove('hidden');
+      document.getElementById('game-title').innerText = currentLevel.name;
+      
+      userInputs = { m2_arrows: [], m3_shapes: [] };
+      document.getElementById('status-msg').innerText = '';
+      document.getElementById('active-panel').classList.remove('active');
+      
+      generateRandomPuzzle();
+      renderModuleCards();
+      startTimer(currentLevel.time);
+      soundEngine.startBGM();
+    }
+
+    // 隨機生成謎題
+    function generateRandomPuzzle() {
+      generatedData = {};
+      
+      // 機制一
+      const num1 = Math.floor(Math.random() * 40) + 10;
+      const num2 = Math.floor(Math.random() * 40) + 10;
+      const num3 = Math.floor(Math.random() * 40) + 10;
+      generatedData.m1 = { expr: `${num1} + ${num2} + ${num3}` };
+
+      // 機制二
+      const colors = ['red', 'blue', 'green', 'yellow'];
+      generatedData.m2 = {
+        color: colors[Math.floor(Math.random() * colors.length)],
+        targetArrows: ['↑', '→', '↓', '←']
+      };
+
+      // 機制三
+      const shapes = ['🌟', '◯', '✖️', '△'];
+      generatedData.m3 = {
+        targetShapes: [...shapes].sort(() => Math.random() - 0.5)
+      };
+
+      // 機制四 (4 位摩斯字母)
+      const letters = Object.keys(MORSE_CODE);
+      let word = "";
+      for (let i = 0; i < 4; i++) {
+        word += letters[Math.floor(Math.random() * letters.length)];
+      }
+      generatedData.m4 = { word: word };
+    }
+
+    // 渲染卡片入口
+    function renderModuleCards() {
+      const container = document.getElementById('modules-container');
+      container.innerHTML = '';
+
+      const moduleNames = {
+        'm1': { title: '機制一：圖形積木', icon: '🧱' },
+        'm2': { title: '機制二：筆的方向', icon: '✏️' },
+        'm3': { title: '機制三：圖案密碼', icon: '🌟' },
+        'm4': { title: '機制四：斷音摩斯密碼', icon: '📡' }
+      };
+
+      currentLevel.modules.forEach(modKey => {
+        const card = document.createElement('div');
+        card.className = 'module-card';
+        card.onclick = () => openModulePanel(modKey);
+        card.innerHTML = `
+          <div style="font-size: 2rem; margin-bottom: 8px;">${moduleNames[modKey].icon}</div>
+          <h3>${moduleNames[modKey].title}</h3>
+          <p style="font-size: 0.8rem; color: #94a3b8;">點擊展開內容</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 開啟機制內容
+    function openModulePanel(modKey) {
+      const panel = document.getElementById('active-panel');
+      panel.classList.add('active');
+      
+      if (modKey === 'm1') {
+        panel.innerHTML = `
+          <h3>🧱 機制一：積木算式</h3>
+          <div class="math-expr">${generatedData.m1.expr}</div>
+          <p style="text-align: center; color: #94a3b8;">請計算層數與顏色，盲砌實體積木後由工作人員輸入 Admin 驗收密碼：</p>
+          <div class="input-group">
+            <input type="text" id="admin-pass" placeholder="Admin 驗收碼">
+            <button class="btn-submit" onclick="verifyAdmin()">驗收通關</button>
+          </div>
+        `;
+      } else if (modKey === 'm2') {
+        const colorMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981', yellow: '#eab308' };
+        panel.innerHTML = `
+          <h3>✏️ 機制二：筆的方向與燈號</h3>
+          <div class="light-box" style="background: ${colorMap[generatedData.m2.color]}"></div>
+          <p style="text-align: center;">盲猴依指示依序點擊 4 個方向鍵：</p>
+          <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="arrow-input-display">已輸入: 無</div>
+          <div class="arrow-grid">
+            <div></div><button class="btn-arrow" onclick="pressArrow('↑')">↑</button><div></div>
+            <button class="btn-arrow" onclick="pressArrow('←')">←</button>
+            <button class="btn-arrow" onclick="pressArrow('↓')">↓</button>
+            <button class="btn-arrow" onclick="pressArrow('→')">→</button>
+          </div>
+          <div style="text-align:center; margin-top:12px;">
+            <button class="btn-submit" onclick="submitM2()">提交方向鍵</button>
+          </div>
+        `;
+      } else if (modKey === 'm3') {
+        panel.innerHTML = `
+          <h3>🌟 機制三：圖案順序密碼</h3>
+          <p style="text-align: center;">請依據指示，順序點擊圖案按鈕：</p>
+          <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="shape-input-display">已選擇: 無</div>
+          <div class="shape-grid">
+            <button class="btn-shape" onclick="pressShape('🌟')">🌟</button>
+            <button class="btn-shape" onclick="pressShape('◯')">◯</button>
+            <button class="btn-shape" onclick="pressShape('✖️')">✖️</button>
+            <button class="btn-shape" onclick="pressShape('△')">△</button>
+          </div>
+          <div style="text-align:center; margin-top:16px;">
+            <button class="btn-submit" onclick="submitM3()">提交圖案鎖</button>
+          </div>
+        `;
+      } else if (modKey === 'm4') {
+        panel.innerHTML = `
+          <h3>📡 機制四：斷音摩斯密碼 (前有聲 ➔ 後純燈光)</h3>
+          <div id="morse-light-box" class="morse-light"></div>
+          <div style="text-align: center;">
+            <button class="btn-submit" onclick="playMorseSequence()">▶ 播放摩斯密碼</button>
+          </div>
+          <div class="input-group">
+            <input type="text" id="morse-input" placeholder="輸入 4 個字母">
+            <button class="btn-submit" onclick="submitM4()">驗證密碼</button>
+          </div>
+        `;
+      }
+    }
+
+    // 摩斯密碼播放 (斷音轉折)
+    function playMorseSequence() {
+      const word = generatedData.m4.word;
+      const light = document.getElementById('morse-light-box');
+      let timeline = [];
+      
+      // 前 2 字有聲有畫，後 2 字純畫面無聲
+      for (let i = 0; i < word.length; i++) {
+        const letter = word[i];
+        const code = MORSE_CODE[letter];
+        const isMuted = (i >= 2);
+
+        for (let symbol of code) {
+          const duration = (symbol === '.') ? 200 : 600;
+          timeline.push({ duration, isMuted });
+          timeline.push({ duration: 200, pause: true });
+        }
+        timeline.push({ duration: 600, pause: true });
+      }
+
+      let index = 0;
+      function runStep() {
+        if (index >= timeline.length) return;
+        const step = timeline[index];
+        index++;
+
+        if (!step.pause) {
+          light.classList.add('active');
+          if (!step.isMuted) {
+            soundEngine.playBeep(step.duration);
+          }
+          setTimeout(() => {
+            light.classList.remove('active');
+            setTimeout(runStep, 50);
+          }, step.duration);
+        } else {
+          setTimeout(runStep, step.duration);
+        }
+      }
+      runStep();
+    }
+
+    // 互動按鈕邏輯
+    function pressArrow(dir) {
+      if (userInputs.m2_arrows.length < 4) {
+        userInputs.m2_arrows.push(dir);
+        document.getElementById('arrow-input-display').innerText = "已輸入: " + userInputs.m2_arrows.join(' ');
+      }
+    }
+
+    function submitM2() {
+      if (userInputs.m2_arrows.length === 4) {
+        showStatus("方向解鎖成功！", true);
+      } else {
+        showStatus("請輸入完整的 4 個方向！", false);
+      }
+    }
+
+    function pressShape(shape) {
+      if (userInputs.m3_shapes.length < 4) {
+        userInputs.m3_shapes.push(shape);
+        document.getElementById('shape-input-display').innerText = "已選擇: " + userInputs.m3_shapes.join(' ');
+      }
+    }
+
+    function submitM3() {
+      const target = generatedData.m3.targetShapes.join('');
+      const input = userInputs.m3_shapes.join('');
+      if (input === target) {
+        showStatus("圖案鎖破解成功！通關成功！", true);
+      } else {
+        showStatus("圖案順序錯誤！", false);
+        triggerExplosion();
+        userInputs.m3_shapes = [];
+        document.getElementById('shape-input-display').innerText = "已選擇: 無";
+      }
+    }
+
+    function submitM4() {
+      const val = document.getElementById('morse-input').value.toUpperCase().trim();
+      if (val === generatedData.m4.word) {
+        showStatus("摩斯密碼驗證正確！", true);
+      } else {
+        showStatus("摩斯密碼錯誤！", false);
+        triggerExplosion();
+      }
+    }
+
+    function verifyAdmin() {
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === "8888") {
+        showStatus("Admin 驗收成功！過關！", true);
+      } else {
+        showStatus("Admin 驗收密碼錯誤！", false);
+        triggerExplosion();
+      }
     }
 
     function triggerExplosion() {
-      sound.playExplosionSound();
-      const card = document.getElementById('gameCard');
-      card.classList.add('shake');
-      setTimeout(() => card.classList.remove('shake'), 350);
+      soundEngine.playExplosion();
+      const container = document.getElementById('mainContainer');
+      container.classList.add('shake');
+      setTimeout(() => container.classList.remove('shake'), 350);
     }
 
-    function triggerMechanism4() {
-      sound.playBlinkSound();
-      const lamp = document.getElementById('lamp4');
-      lamp.classList.add('active');
-      setTimeout(() => lamp.classList.remove('active'), 180);
+    function showStatus(msg, isSuccess) {
+      const el = document.getElementById('status-msg');
+      el.innerText = msg;
+      el.className = `status-msg ${isSuccess ? 'success' : 'error'}`;
     }
 
-    function exitLevel() {
-      sound.stopBGM();
-      document.getElementById('status').innerText = "⏸ 已離開關卡：BGM 停止";
+    // 計時器邏輯
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      remainingTime = seconds;
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        remainingTime--;
+        updateTimerDisplay();
+        if (remainingTime <= 0) {
+          clearInterval(timerInterval);
+          triggerExplosion();
+          showStatus("⏰ 時間到！拆彈失敗！", false);
+        }
+      }, 1000);
     }
 
-    function changeVolume(val) {
-      sound.setVolume(val);
-      if (val > 0 && sound.isMuted) {
-        sound.isMuted = false;
-        document.getElementById('muteBtn').innerText = "靜音";
-      }
+    function updateTimerDisplay() {
+      const m = Math.floor(remainingTime / 60).toString().padStart(2, '0');
+      const s = (remainingTime % 60).toString().padStart(2, '0');
+      document.getElementById('timer-display').innerText = `${m}:${s}`;
     }
 
-    function toggleMute() {
-      const slider = document.getElementById('volumeSlider');
-      const muteBtn = document.getElementById('muteBtn');
-
-      if (sound.isMuted) {
-        sound.isMuted = false;
-        slider.value = sound.lastVolume;
-        sound.setVolume(sound.lastVolume);
-        muteBtn.innerText = "靜音";
-      } else {
-        sound.lastVolume = slider.value;
-        sound.isMuted = true;
-        slider.value = 0;
-        sound.setVolume(0);
-        muteBtn.innerText = "取消靜音";
-      }
+    function goToMenu() {
+      clearInterval(timerInterval);
+      soundEngine.stopBGM();
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-menu').classList.remove('hidden');
     }
+
+    // 啟動選單
+    initMenu();
   </script>
 </body>
 </html>
