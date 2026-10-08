@@ -676,7 +676,7 @@
         targetArrows: targetArrows
       };
 
-      // ===== 機制三（純 > 與 < 條件邏輯） =====
+      // ===== 機制三 =====
       let nums = [];
       while(nums.length < 4) {
         let n = Math.floor(Math.random() * 40) + 1;
@@ -684,10 +684,10 @@
       }
 
       const targetShapes = [
-        nums[0] > 15 ? '🌟' : '◯',           // 圖案 1： > 15 為星星， < 16 為圓形
-        nums[1] % 2 === 0 ? '✖️' : '△',       // 圖案 2： 雙數為叉叉，單數為三角形
-        nums[2] > 25 ? '🌟' : '△',           // 圖案 3： > 25 為星星， < 26 為三角形
-        nums[3] > nums[2] ? '◯' : '✖️'        // 圖案 4： > 第3個數字為圓形，否則為叉叉
+        nums[0] > 15 ? '🌟' : '◯',
+        nums[1] % 2 === 0 ? '✖️' : '△',
+        nums[2] > 25 ? '🌟' : '△',
+        nums[3] > nums[2] ? '◯' : '✖️'
       ];
 
       generatedData.m3 = {
@@ -695,10 +695,10 @@
         targetShapes: targetShapes
       };
 
-      // ===== 機制四 =====
+      // ===== 機制四（改為 3 個字元） =====
       const letters = Object.keys(MORSE_CODE);
       let word = "";
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 3; i++) {
         word += letters[Math.floor(Math.random() * letters.length)];
       }
       generatedData.m4 = { word: word };
@@ -809,7 +809,7 @@
             <button class="btn-submit" onclick="playMorseSequence()">▶ 播放摩斯燈號</button>
           </div>
           <div class="input-group">
-            <input type="text" id="morse-input" placeholder="輸入 4 個字母">
+            <input type="text" id="morse-input" placeholder="輸入 3 個字母">
             <button class="btn-submit" onclick="submitM4()">驗證密碼</button>
           </div>
         `;
@@ -907,7 +907,8 @@
       for (let i = 0; i < word.length; i++) {
         const letter = word[i];
         const code = MORSE_CODE[letter];
-        const isMuted = (i >= 2);
+        // 第 1 個字元（i === 0）發聲；第 2、3 個字元（i >= 1）靜音
+        const isMuted = (i >= 1);
 
         for (let symbol of code) {
           const duration = (symbol === '.') ? 500 : 1500;
