@@ -638,48 +638,34 @@
     function generateRandomPuzzle() {
       generatedData = {};
       
-      // ===== 機制一精確修復邏輯 =====
+      // ===== 機制一 =====
       const m1Light = ['red', 'blue', 'green'][Math.floor(Math.random() * 3)];
       const gridNums = [];
       for(let i=0; i<6; i++) {
         gridNums.push(Math.floor(Math.random() * 6) + 1);
       }
       
-      // 生成 3 個算式：[ (d0, d1), (d2, d3), (d4, d5) ]
-      // 根據使用者邏輯對應 6 個位置：
-      // pos 0 (第1層左): 算式1十位 (d0)
-      // pos 1 (第1層中): 算式2十位 (d2)
-      // pos 2 (第1層右): 算式3十位 (d4)
-      // pos 3 (第2層左): 算式1個位 (d1)
-      // pos 4 (第2層中): 算式2個位 (d3)
-      // pos 5 (第2層右): 算式3個位 (d5)
       const mappedNums = [
-        gridNums[0], // pos 0
-        gridNums[2], // pos 1
-        gridNums[4], // pos 2
-        gridNums[1], // pos 3
-        gridNums[3], // pos 4
-        gridNums[5]  // pos 5
+        gridNums[0], gridNums[2], gridNums[4],
+        gridNums[1], gridNums[3], gridNums[5]
       ];
 
       const gridColors = mappedNums.map(n => COLOR_TABLES_M1[m1Light][n]);
-
-      // 隨機選取 3 個位置 (0~5) 作為高亮標示
       const stepTargets = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).slice(0, 3);
       const targetColors = stepTargets.map(pos => gridColors[pos]);
 
       generatedData.m1 = {
         light: m1Light,
         exprs: [
-          `${gridNums[0]*10 + gridNums[1]}`, // 算式 1
-          `${gridNums[2]*10 + gridNums[3]}`, // 算式 2
-          `${gridNums[4]*10 + gridNums[5]}`  // 算式 3
+          `${gridNums[0]*10 + gridNums[1]}`,
+          `${gridNums[2]*10 + gridNums[3]}`,
+          `${gridNums[4]*10 + gridNums[5]}`
         ],
         stepTargets: stepTargets,
         targetColors: targetColors
       };
 
-      // 機制二
+      // ===== 機制二 =====
       const m2Light = ['red', 'blue', 'green', 'black'][Math.floor(Math.random() * 4)];
       const shuffledColors = ['🔴', '🔵', '🟢', '🖤'].sort(() => Math.random() - 0.5);
       const targetArrows = shuffledColors.map(c => COLOR_ARROW_MAP_M2[m2Light][c]);
@@ -690,18 +676,26 @@
         targetArrows: targetArrows
       };
 
-      // 機制三
+      // ===== 機制三（純 > 與 < 條件邏輯） =====
       let nums = [];
       while(nums.length < 4) {
-        let n = Math.floor(Math.random() * 50) + 1;
+        let n = Math.floor(Math.random() * 40) + 1;
         if (!nums.includes(n)) nums.push(n);
       }
+
+      const targetShapes = [
+        nums[0] > 15 ? '🌟' : '◯',           // 圖案 1： > 15 為星星， < 16 為圓形
+        nums[1] % 2 === 0 ? '✖️' : '△',       // 圖案 2： 雙數為叉叉，單數為三角形
+        nums[2] > 25 ? '🌟' : '△',           // 圖案 3： > 25 為星星， < 26 為三角形
+        nums[3] > nums[2] ? '◯' : '✖️'        // 圖案 4： > 第3個數字為圓形，否則為叉叉
+      ];
+
       generatedData.m3 = {
         numbers: nums,
-        targetShapes: ['🌟', '◯', '✖️', '△'].sort(() => Math.random() - 0.5)
+        targetShapes: targetShapes
       };
 
-      // 機制四
+      // ===== 機制四 =====
       const letters = Object.keys(MORSE_CODE);
       let word = "";
       for (let i = 0; i < 4; i++) {
@@ -743,7 +737,6 @@
       if (modKey === 'm1') {
         const lightColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#10b981' };
         
-        // 渲染 3 個步驟對應的 2x3 圖示 (畫面上排為第2層[3,4,5] / 下排為第1層[0,1,2])
         const stepsHTML = generatedData.m1.stepTargets.map((targetIdx, stepNum) => {
           let cellsHTML = '';
           const displayOrder = [3, 4, 5, 0, 1, 2];
@@ -888,7 +881,16 @@
     }
 
     function submitM3() {
-      if (userInputs.m3_shapes.length === 4) {
+      const target = generatedData.m3.targetShapes;
+      const input = userInputs.m3_shapes;
+      let isCorrect = (input.length === 4);
+      if (isCorrect) {
+        for (let i = 0; i < 4; i++) {
+          if (input[i] !== target[i]) isCorrect = false;
+        }
+      }
+
+      if (isCorrect) {
         markModuleComplete('m3', "區域 C 圖案密碼解開！");
       } else {
         triggerPenalty("圖案密碼錯誤！扣減 20 秒！");
