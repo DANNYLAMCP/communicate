@@ -598,6 +598,7 @@
     let generatedData = {};
     let userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
     let completedModules = new Set();
+    let currentActiveModule = null; // 紀錄當前開啟的面板
 
     function initMenu() {
       const grid = document.getElementById('menu-grid');
@@ -633,6 +634,7 @@
     function resetInputs() {
       userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
       completedModules = new Set();
+      currentActiveModule = null;
     }
 
     function generateRandomPuzzle() {
@@ -695,7 +697,7 @@
         targetShapes: targetShapes
       };
 
-      // ===== 機制四（改為 3 個字元） =====
+      // ===== 機制四 =====
       const letters = Object.keys(MORSE_CODE);
       let word = "";
       for (let i = 0; i < 3; i++) {
@@ -731,6 +733,7 @@
     }
 
     function openModulePanel(modKey) {
+      currentActiveModule = modKey;
       const panel = document.getElementById('active-panel');
       panel.classList.add('active');
       
@@ -767,7 +770,7 @@
             ).join('')}
           </div>
           <div style="text-align: center; margin-top: 16px;">
-            <button class="btn-submit" onclick="submitM1()">驗證積木密碼</button>
+            <button class="btn-submit" onclick="submitM1()">驗證積木密碼 (Enter)</button>
           </div>
         `;
       } else if (modKey === 'm2') {
@@ -781,7 +784,7 @@
           </div>
           <div style="text-align: center; margin: 10px; font-weight: bold; color: #38bdf8;" id="arrow-display">已輸入: 無</div>
           <div style="text-align:center; margin-top:16px;">
-            <button class="btn-submit" onclick="submitM2()">提交方向</button>
+            <button class="btn-submit" onclick="submitM2()">提交方向 (Enter)</button>
           </div>
         `;
       } else if (modKey === 'm3') {
@@ -798,7 +801,7 @@
             <button class="btn-shape" onclick="pressShape('△')">△</button>
           </div>
           <div style="text-align:center; margin-top:16px;">
-            <button class="btn-submit" onclick="submitM3()">提交圖案</button>
+            <button class="btn-submit" onclick="submitM3()">提交圖案 (Enter)</button>
           </div>
         `;
       } else if (modKey === 'm4') {
@@ -809,10 +812,14 @@
             <button class="btn-submit" onclick="playMorseSequence()">▶ 播放摩斯燈號</button>
           </div>
           <div class="input-group">
-            <input type="text" id="morse-input" placeholder="輸入 3 個字母">
-            <button class="btn-submit" onclick="submitM4()">驗證密碼</button>
+            <input type="text" id="morse-input" placeholder="輸入 3 個字母" autofocus>
+            <button class="btn-submit" onclick="submitM4()">驗證密碼 (Enter)</button>
           </div>
         `;
+        setTimeout(() => {
+          const inputEl = document.getElementById('morse-input');
+          if (inputEl) inputEl.focus();
+        }, 50);
       }
     }
 
@@ -842,13 +849,34 @@
       }
     }
 
+    // ===== 全域 Enter 鍵與方向鍵監聽器 =====
     window.addEventListener('keydown', (e) => {
+      // 1. 方向鍵處理 (機制二)
       const arrowMap = { 'ArrowUp': '↑', 'ArrowDown': '↓', 'ArrowLeft': '←', 'ArrowRight': '→' };
-      if (arrowMap[e.key]) {
+      if (arrowMap[e.key] && currentActiveModule === 'm2') {
         if (userInputs.m2_arrows.length < 4) {
           userInputs.m2_arrows.push(arrowMap[e.key]);
           const display = document.getElementById('arrow-display');
           if (display) display.innerText = "已輸入: " + userInputs.m2_arrows.join(' ');
+        }
+      }
+
+      // 2. Enter 鍵觸發提交
+      if (e.key === 'Enter') {
+        const victoryModal = document.getElementById('victory-modal');
+        if (!victoryModal.classList.contains('hidden')) {
+          closeVictoryModal();
+          return;
+        }
+
+        if (currentActiveModule === 'm1') {
+          submitM1();
+        } else if (currentActiveModule === 'm2') {
+          submitM2();
+        } else if (currentActiveModule === 'm3') {
+          submitM3();
+        } else if (currentActiveModule === 'm4') {
+          submitM4();
         }
       }
     });
@@ -907,7 +935,6 @@
       for (let i = 0; i < word.length; i++) {
         const letter = word[i];
         const code = MORSE_CODE[letter];
-        // 第 1 個字元（i === 0）發聲；第 2、3 個字元（i >= 1）靜音
         const isMuted = (i >= 1);
 
         for (let symbol of code) {
@@ -939,7 +966,9 @@
     }
 
     function submitM4() {
-      const val = document.getElementById('morse-input').value.toUpperCase().trim();
+      const inputEl = document.getElementById('morse-input');
+      if (!inputEl) return;
+      const val = inputEl.value.toUpperCase().trim();
       if (val === generatedData.m4.word) {
         markModuleComplete('m4', "區域 D 摩斯密碼驗證正確！");
       } else {
@@ -1013,6 +1042,7 @@
     function goToMenu() {
       clearInterval(timerInterval);
       soundEngine.stopBGM();
+      currentActiveModule = null;
       document.getElementById('screen-game').classList.add('hidden');
       document.getElementById('screen-menu').classList.remove('hidden');
     }
