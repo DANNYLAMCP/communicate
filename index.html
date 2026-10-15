@@ -599,6 +599,7 @@
     let userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
     let completedModules = new Set();
     let currentActiveModule = null; // 紀錄當前開啟的面板
+    let isMorsePlaying = false;    // 摩斯燈號播放狀態旗標
 
     function initMenu() {
       const grid = document.getElementById('menu-grid');
@@ -635,6 +636,7 @@
       userInputs = { m1_colors: [], m2_arrows: [], m3_shapes: [] };
       completedModules = new Set();
       currentActiveModule = null;
+      isMorsePlaying = false;
     }
 
     function generateRandomPuzzle() {
@@ -808,8 +810,11 @@
         panel.innerHTML = `
           <h3>區域 D：斷音摩斯燈號</h3>
           <div id="morse-light-box" class="morse-light"></div>
+          <div id="morse-status-text" style="text-align: center; font-weight: bold; color: #f59e0b; margin: 8px 0; min-height: 24px;">
+            [ 點擊下方按鈕開始播放 ]
+          </div>
           <div style="text-align: center;">
-            <button class="btn-submit" onclick="playMorseSequence()">▶ 播放摩斯燈號</button>
+            <button class="btn-submit" id="btn-play-morse" onclick="playMorseSequence()">▶ 播放摩斯燈號</button>
           </div>
           <div class="input-group">
             <input type="text" id="morse-input" placeholder="輸入 3 個字母" autofocus>
@@ -928,6 +933,13 @@
     }
 
     function playMorseSequence() {
+      if (isMorsePlaying) return; // 防重複點擊
+      isMorsePlaying = true;
+
+      const btn = document.getElementById('btn-play-morse');
+      const statusText = document.getElementById('morse-status-text');
+      if (btn) btn.disabled = true;
+
       const word = generatedData.m4.word;
       const light = document.getElementById('morse-light-box');
       let timeline = [];
@@ -935,25 +947,36 @@
       for (let i = 0; i < word.length; i++) {
         const letter = word[i];
         const code = MORSE_CODE[letter];
-        const isMuted = (i >= 1);
+        const isMuted = (i >= 1); // 第 1 個字元有聲，第 2 及 3 個字元靜音
 
         for (let symbol of code) {
-          const duration = (symbol === '.') ? 500 : 1500;
-          timeline.push({ duration, isMuted });
-          timeline.push({ duration: 400, pause: true });
+          // 點（.）為 250ms (0.25s)，劃（-）為 2000ms (2.0s)
+          const duration = (symbol === '.') ? 250 : 2000;
+          timeline.push({ duration, isMuted, letterIndex: i + 1 });
+          timeline.push({ duration: 400, pause: true }); // 符號間隔
         }
-        timeline.push({ duration: 1200, pause: true });
+        timeline.push({ duration: 2000, pause: true }); // 字母間隔 2.0 秒
       }
 
       let index = 0;
       function runStep() {
-        if (index >= timeline.length) return;
+        if (index >= timeline.length) {
+          if (statusText) statusText.innerText = "[ 播放完畢，可重新播放 ]";
+          if (btn) btn.disabled = false;
+          isMorsePlaying = false;
+          return;
+        }
+
         const step = timeline[index];
         index++;
 
         if (!step.pause) {
+          if (statusText) {
+            statusText.innerText = `[ 播放中：第 ${step.letterIndex} / 3 個字母 ]`;
+          }
           light.classList.add('active');
           if (!step.isMuted) soundEngine.playBeep(step.duration);
+
           setTimeout(() => {
             light.classList.remove('active');
             setTimeout(runStep, 50);
@@ -1043,6 +1066,7 @@
       clearInterval(timerInterval);
       soundEngine.stopBGM();
       currentActiveModule = null;
+      isMorsePlaying = false;
       document.getElementById('screen-game').classList.add('hidden');
       document.getElementById('screen-menu').classList.remove('hidden');
     }
