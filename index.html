@@ -947,12 +947,11 @@
       for (let i = 0; i < word.length; i++) {
         const letter = word[i];
         const code = MORSE_CODE[letter];
-        const isMuted = (i >= 1); // 第 1 個字元有聲，第 2 及 3 個字元靜音
 
         for (let symbol of code) {
           // 點（.）為 250ms (0.25s)，劃（-）為 2000ms (2.0s)
           const duration = (symbol === '.') ? 250 : 2000;
-          timeline.push({ duration, isMuted, letterIndex: i + 1 });
+          timeline.push({ duration, letterIndex: i + 1 });
           timeline.push({ duration: 400, pause: true }); // 符號間隔
         }
         timeline.push({ duration: 2000, pause: true }); // 字母間隔 2.0 秒
@@ -975,7 +974,7 @@
             statusText.innerText = `[ 播放中：第 ${step.letterIndex} / 3 個字母 ]`;
           }
           light.classList.add('active');
-          if (!step.isMuted) soundEngine.playBeep(step.duration);
+          soundEngine.playBeep(step.duration); // 全程發出聲響
 
           setTimeout(() => {
             light.classList.remove('active');
